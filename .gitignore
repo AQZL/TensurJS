@@ -1,0 +1,27 @@
+# Gradle
+.gradle/
+.gradle-proxy-home/
+build/
+
+# Minecraft run directories
+run/
+runs/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Local dependency jars (do not redistribute third-party mods)
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Generated and local-only files
+src/generated/
+logs/
+crash-reports/
+*.log
+*.bak
+
+# Local GitHub Wiki checkout
+.wiki/
