@@ -50,9 +50,8 @@ kubejs/assets/example/textures/skill/summon_villager.png
 
 ## Documentation
 
-The [TensurJS Wiki](https://github.com/AQZL/TensurJS/wiki) contains installation instructions, complete skill and race examples, existing-skill overrides, elemental spirit usage, context references, and the full public API.
+The [TensurJS Wiki](https://github.com/AQZL/TensurJS/wiki) contains complete skill and race examples, existing-skill overrides, elemental spirit usage, context references, and the full public API.
 
-- [Getting Started](https://github.com/AQZL/TensurJS/wiki/Installation)
 - [API Reference](https://github.com/AQZL/TensurJS/wiki/API-Reference)
 - [Creating Skills](https://github.com/AQZL/TensurJS/wiki/Creating-Skills)
 - [Creating Races](https://github.com/AQZL/TensurJS/wiki/Creating-Races)
