@@ -2,6 +2,8 @@
 
 KubeJS addon for registering ManasCore/Tensura skills and races from startup scripts.
 
+Full documentation: [TensurJS Wiki](https://github.com/AQZL/TensurJS/wiki)
+
 Example registry IDs:
 
 - Skill registry: `manascore:skill`
