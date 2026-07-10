@@ -10,15 +10,6 @@ TensurJS is a KubeJS addon for Minecraft 1.21.1 NeoForge that exposes selected M
 - Replace icons, cooldowns, activation checks, and behavior of existing skills.
 - Grant elemental spirits with the same magic rewards as a successful Tensura prayer.
 
-## Documentation
-
-- [Installation](https://github.com/AQZL/TensurJS/wiki/Installation)
-- [Creating Skills](https://github.com/AQZL/TensurJS/wiki/Creating-Skills)
-- [Creating Races](https://github.com/AQZL/TensurJS/wiki/Creating-Races)
-- [Modifying Existing Skills](https://github.com/AQZL/TensurJS/wiki/Modifying-Existing-Skills)
-- [Elemental Spirits](https://github.com/AQZL/TensurJS/wiki/Elemental-Spirits)
-- [Context Reference](https://github.com/AQZL/TensurJS/wiki/Context-Reference)
-
 ## Requirements
 
 - Minecraft 1.21.1
@@ -180,3 +171,11 @@ Third-party mod jars are intentionally excluded from this repository. Put compat
 ```
 
 The output jar is created in `build/libs/`.
+
+## Ownership and Permissions
+
+Copyright © 2026 AQZL. All rights reserved.
+
+You may view, fork, and modify the source code for personal use or for contributing changes back to the official project.
+
+You may not redistribute, republish, re-upload, mirror, sell, or otherwise distribute the original project, compiled builds, source code, or modified versions without prior written permission from AQZL.
