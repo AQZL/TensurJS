@@ -12,15 +12,6 @@ Create custom skills and races, define evolution routes, override existing Tensu
 - Grant lesser, medium, or greater elemental spirits with prayer-equivalent rewards.
 - Access script contexts for entities, skill state, cooldowns, magicules, effects, and spawning.
 
-## Requirements
-
-- Minecraft 1.21.1
-- NeoForge 21.1+
-- KubeJS 2101.7
-- Architectury API 13
-- ManasCore modules required by Tensura
-- Tensura 2.0
-
 ## Quick Start
 
 Put registry and skill override scripts in `kubejs/startup_scripts/`. Changes to startup scripts require a full game restart; `/reload` does not recreate registries.
