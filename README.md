@@ -1,14 +1,16 @@
 # TensurJS
 
-TensurJS is a KubeJS addon for Minecraft 1.21.1 NeoForge that exposes selected ManasCore and Tensura systems to scripts.
+TensurJS is a KubeJS addon for Minecraft 1.21.1 NeoForge that exposes selected ManasCore and Tensura systems to JavaScript.
+
+Create custom skills and races, define evolution routes, override existing Tensura skills, and grant elemental spirits without writing a separate Java addon.
 
 ## Features
 
-- Register custom Tensura skills from startup scripts.
-- Register custom races, attributes, abilities, and evolution routes.
-- Add races and skills to reincarnation starting pools.
-- Replace icons, cooldowns, activation checks, and behavior of existing skills.
-- Grant elemental spirits with the same magic rewards as a successful Tensura prayer.
+- Register custom skills with modes, attributes, activation checks, and scripted behavior.
+- Register custom races with stats, abilities, starting pools, and evolution requirements.
+- Override the icon, cooldown, mode cooldowns, and callbacks of existing Tensura skills.
+- Grant lesser, medium, or greater elemental spirits with prayer-equivalent rewards.
+- Access script contexts for entities, skill state, cooldowns, magicules, effects, and spawning.
 
 ## Requirements
 
@@ -16,151 +18,46 @@ TensurJS is a KubeJS addon for Minecraft 1.21.1 NeoForge that exposes selected M
 - NeoForge 21.1+
 - KubeJS 2101.7
 - Architectury API 13
-- ManasCore 4 modules required by Tensura
+- ManasCore modules required by Tensura
 - Tensura 2.0
 
-Registry IDs exposed to KubeJS:
+## Quick Start
 
-- Skills: `TensuraKubeJS.SKILL_REGISTRY` (`manascore:skill`)
-- Races: `TensuraKubeJS.RACE_REGISTRY` (`manascore:race`)
-
-Put registry and skill override scripts in `kubejs/startup_scripts/`. Startup script changes require a full game restart; `/reload` cannot recreate registries.
-
-## Create a Custom Skill
+Put registry and skill override scripts in `kubejs/startup_scripts/`. Changes to startup scripts require a full game restart; `/reload` does not recreate registries.
 
 ```js
 StartupEvents.registry(TensuraKubeJS.SKILL_REGISTRY, event => {
-  event.create('example:surging_aura')
-    .name('Surging Aura')
-    .description('A two-mode toggled aura.')
+  event.create('example:summon_villager')
+    .name('Summon Villager')
+    .description('Consumes 1000 magicules and summons a villager.')
     .type('extra')
-    .icon('example:skill/surging_aura')
-    .startingSkill(false)
-    .modes(2)
-    .mode(0, 'pulse', 'Pulse', 'A short pulse mode.')
-    .mode(1, 'burst', 'Burst', 'A stronger burst mode.')
-    .maxMastery(200)
-    .canBeToggled(true)
-    .canTick(ctx => ctx.isToggled())
-    .heldAttribute(
-      'minecraft:generic.movement_speed',
-      'surging_aura_speed',
-      0.15,
-      'ADD_MULTIPLIED_TOTAL'
-    )
+    .icon('example:skill/summon_villager')
     .onPressed(ctx => {
-      ctx.setCooldown(ctx.mode === 0 ? 3 : 8)
-    })
-    .onTick(ctx => {
-      if (ctx.entity.tickCount % 40 === 0) {
-        ctx.entity.heal(1)
-      }
+      if (ctx.cooldown() > 0) return
+      if (!ctx.consumeMagicule(1000)) return
+
+      ctx.spawnEntity('minecraft:villager')
+      ctx.setCooldown(5)
     })
 })
 ```
 
-The icon above is loaded from:
+The example icon belongs at:
 
 ```text
-kubejs/assets/example/textures/skill/surging_aura.png
+kubejs/assets/example/textures/skill/summon_villager.png
 ```
 
-Registered skills are not automatically learned. Use `.startingSkill(true)` or `.secondStartingSkill(true)` only when the skill should enter a reincarnation skill pool.
+## Documentation
 
-## Create a Custom Race and Evolution Route
+The [TensurJS Wiki](https://github.com/AQZL/TensurJS/wiki) contains installation instructions, complete skill and race examples, existing-skill overrides, elemental spirit usage, context references, and the full public API.
 
-Evolution requirements belong to the target race. In this example, `example:oni` requires 1000 base EP because `.epRequirement(1000)` is declared on Oni.
-
-```js
-StartupEvents.registry(TensuraKubeJS.RACE_REGISTRY, event => {
-  event.create('example:lesser_oni')
-    .name('Lesser Oni')
-    .description('The first stage of an example evolution route.')
-    .difficulty('intermediate')
-    .startingRace(true)
-    .randomStartingRace(true)
-    .baseAura(500, 600)
-    .baseMagicule(500, 600)
-    .maxHealth(8)
-    .maxSpiritualHealth(40)
-    .attack(2)
-    .movementSpeed(0.03)
-    .attribute(
-      'minecraft:generic.max_health',
-      'lesser_oni_health',
-      8,
-      'ADD_VALUE'
-    )
-    .intrinsicSkill('example:surging_aura')
-    .defaultEvolution('example:oni')
-
-  event.create('example:oni')
-    .name('Oni')
-    .description('An evolved KubeJS-created race.')
-    .difficulty('hard')
-    .previousEvolution('example:lesser_oni')
-    .baseAura(2000, 2500)
-    .baseMagicule(2000, 2500)
-    .maxHealth(16)
-    .maxSpiritualHealth(80)
-    .attack(4)
-    .movementSpeed(0.06)
-    .epRequirement(1000)
-})
-```
-
-Tensura evaluates this EP requirement from base maximum aura plus base maximum magicule.
-
-Additional race requirement helpers include:
-
-- `itemConsumeRequirement(item, count, weight?)`
-- `itemCarryingRequirement(item, count, weight?)`
-- `skillRequirement(skill, mastered, weight?)`
-- `evolution(race, progress)`
-- `evolutionProgress(callback)`
-
-## Modify an Existing Skill
-
-Each configured callback replaces the original callback with the same name. Do not define `onPressed` when only the icon or cooldown should change.
-
-```js
-TensuraKubeJS.modifySkill('tensura:magic_sense')
-  .icon('example:skill/custom_magic_sense')
-  .cooldown(5)
-```
-
-Multi-mode cooldowns are zero-based:
-
-```js
-TensuraKubeJS.modifySkill('tensura:some_multi_mode_skill')
-  .cooldown(10)
-  .cooldown(0, 3)
-  .cooldown(1, 8)
-```
-
-## Grant Elemental Spirits
-
-Spirit conditions belong in `kubejs/server_scripts/`.
-
-```js
-PlayerEvents.tick(event => {
-  const player = event.player
-
-  if (player.experienceLevel >= 60 && !TensuraKubeJS.hasSpiritAtLeast(player, 'fire', 'greater')) {
-    TensuraKubeJS.grantSpirit(player, 'fire', 'greater')
-  }
-})
-```
-
-`grantSpirit` upgrades the stored spirit tier, triggers summon rewards, grants all matching spiritual magic up to that tier, and grants the element's manipulation skill.
-
-For worlds created with an older TensurJS build:
-
-```js
-PlayerEvents.loggedIn(event => {
-  TensuraKubeJS.syncSpiritRewards(event.player)
-})
-```
+- [Getting Started](https://github.com/AQZL/TensurJS/wiki/Installation)
+- [API Reference](https://github.com/AQZL/TensurJS/wiki/API-Reference)
+- [Creating Skills](https://github.com/AQZL/TensurJS/wiki/Creating-Skills)
+- [Creating Races](https://github.com/AQZL/TensurJS/wiki/Creating-Races)
+- [Modifying Existing Skills](https://github.com/AQZL/TensurJS/wiki/Modifying-Existing-Skills)
+- [Elemental Spirits](https://github.com/AQZL/TensurJS/wiki/Elemental-Spirits)
 
 ## Building from Source
 
